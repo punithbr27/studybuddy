@@ -50,24 +50,29 @@ public class AuthController {
             return null;
         }
 
-        // Step 2: Use the Factory to create the User object
+        // Step 2: Validate PESU domain
+        if (!email.toLowerCase().endsWith("@pesu.pes.edu")) {
+            System.out.println("❌ Registration failed: Only @pesu.pes.edu emails allowed!");
+            return null;
+        }
+
+        // Step 3: Use the Factory to create the User object
         User user = UserFactory.createUser(role, name, email, password, semester, cgpa);
 
-        // Step 3: Save to database
-        String sql = "INSERT INTO users (name, email, password, role, semester, cgpa) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        // Step 4: Save to database (verified defaults to 0 in SQL)
+        String sql = "INSERT INTO users (name, email, password, role, semester, cgpa, verified) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
-            // PreparedStatement prevents SQL injection attacks
-            // The '?' placeholders are filled in safely below
             PreparedStatement pstmt = dbManager.getConnection().prepareStatement(
                     sql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, user.getName());
             pstmt.setString(2, user.getEmail());
-            pstmt.setString(3, user.getPassword()); // TODO: Hash password later
+            pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getRole());
             pstmt.setInt(5, semester);
             pstmt.setDouble(6, cgpa);
+            pstmt.setInt(7, user.isVerified() ? 1 : 0);
 
             pstmt.executeUpdate();
 
@@ -165,9 +170,10 @@ public class AuthController {
         String password = rs.getString("password");
         int semester = rs.getInt("semester");
         double cgpa = rs.getDouble("cgpa");
+        boolean verified = rs.getInt("verified") == 1;
 
         // Use Factory to create the right type, then set the ID
-        User user = UserFactory.createUser(role, name, email, password, semester, cgpa);
+        User user = UserFactory.createUser(role, name, email, password, semester, cgpa, verified);
         user.setUserId(id);
         return user;
     }

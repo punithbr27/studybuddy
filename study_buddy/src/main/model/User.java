@@ -29,25 +29,24 @@ public abstract class User {
     protected String email;
     protected String password; // will be hashed later
     protected String role; // "STUDENT", "TUTOR", or "ADMIN"
+    protected boolean isVerified;
 
     // ─── Constructor ───
     // 'protected' because only subclasses (Student, Tutor) should call this
-    protected User(int userId, String name, String email, String password, String role) {
+    protected User(int userId, String name, String email, String password, String role, boolean isVerified) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.isVerified = isVerified;
     }
 
     // Constructor without userId (for NEW users before DB insert)
     protected User(String name, String email, String password, String role) {
-        this(-1, name, email, password, role); // -1 means "not yet saved"
+        this(-1, name, email, password, role, false); // -1 means "not yet saved"
     }
 
-    // ─── Abstract Method ───
-    // Each subclass MUST implement this. Forces Student and Tutor
-    // to display their info differently.
     public abstract String displayProfile();
 
     // ─── Getters ───
@@ -71,9 +70,17 @@ public abstract class User {
         return role;
     }
 
+    public boolean isVerified() {
+        return isVerified;
+    }
+
     // ─── Setters ───
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public void setVerified(boolean verified) {
+        this.isVerified = verified;
     }
 
     public void setName(String name) {

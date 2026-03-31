@@ -30,20 +30,15 @@ public class Student extends User {
     // 'super(...)' calls the PARENT class (User) constructor
     // This sets up the common fields (name, email, etc.)
     public Student(int userId, String name, String email, String password,
-            int semester, double cgpa) {
-        super(userId, name, email, password, "STUDENT"); // role = "STUDENT"
+            int semester, double cgpa, boolean isVerified) {
+        super(userId, name, email, password, "STUDENT", isVerified);
         this.semester = semester;
         this.cgpa = cgpa;
         this.enrolledCourses = new ArrayList<>();
     }
 
-    // Constructor for new students (no userId yet)
-    public Student(String name, String email, String password,
-            int semester, double cgpa) {
-        super(name, email, password, "STUDENT");
-        this.semester = semester;
-        this.cgpa = cgpa;
-        this.enrolledCourses = new ArrayList<>();
+    public Student(String name, String email, String password, int semester, double cgpa) {
+        this(-1, name, email, password, semester, cgpa, false);
     }
 
     // ─── Implementing the abstract method from User ───

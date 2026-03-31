@@ -3,6 +3,7 @@ package main.pattern;
 import main.model.User;
 import main.model.Student;
 import main.model.Tutor;
+import main.model.Admin;
 
 /**
  * UserFactory — implements the FACTORY METHOD PATTERN
@@ -46,23 +47,22 @@ public class UserFactory {
      */
     public static User createUser(String role, String name, String email,
             String password, int semester, double cgpa) {
+        return createUser(role, name, email, password, semester, cgpa, false);
+    }
 
-        // Convert to uppercase so "student", "Student", "STUDENT" all work
+    public static User createUser(String role, String name, String email,
+            String password, int semester, double cgpa, boolean isVerified) {
         switch (role.toUpperCase()) {
-
             case "STUDENT":
-                System.out.println("[Factory] Creating a STUDENT account...");
-                return new Student(name, email, password, semester, cgpa);
-
+                return new Student(-1, name, email, password, semester, cgpa, isVerified);
             case "TUTOR":
-                System.out.println("[Factory] Creating a TUTOR account...");
-                return new Tutor(name, email, password, semester, cgpa);
-
+                return new Tutor(-1, name, email, password, semester, cgpa, isVerified);
+            case "ADMIN":
+                return new Admin(-1, name, email, password, isVerified);
             default:
-                // If someone passes an invalid role, throw an error
                 throw new IllegalArgumentException(
                         "[Factory ERROR] Unknown role: '" + role + "'. " +
-                                "Valid roles are: STUDENT, TUTOR");
+                                "Valid roles are: STUDENT, TUTOR, ADMIN");
         }
     }
 }

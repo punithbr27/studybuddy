@@ -33,19 +33,8 @@ public class Tutor extends Student {
 
     // ─── Constructor ───
     public Tutor(int userId, String name, String email, String password,
-            int semester, double cgpa) {
-        super(userId, name, email, password, semester, cgpa);
-        this.role = "TUTOR"; // Override the role set by Student
-        this.reputationScore = 0.0;
-        this.totalRatings = 0;
-        this.isAvailable = true;
-        this.teachingSubjects = new ArrayList<>();
-    }
-
-    // Constructor for new tutors (no userId yet)
-    public Tutor(String name, String email, String password,
-            int semester, double cgpa) {
-        super(name, email, password, semester, cgpa);
+            int semester, double cgpa, boolean isVerified) {
+        super(userId, name, email, password, semester, cgpa, isVerified);
         this.role = "TUTOR";
         this.reputationScore = 0.0;
         this.totalRatings = 0;

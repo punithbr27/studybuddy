@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     role        TEXT NOT NULL CHECK(role IN ('STUDENT', 'TUTOR', 'ADMIN')),
     semester    INTEGER,
     cgpa        REAL,
+    verified    INTEGER NOT NULL DEFAULT 0,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
