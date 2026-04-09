@@ -1,0 +1,19 @@
+# Java
+*.class
+*.jar
+!lib/*.jar
+
+# Database
+*.db
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
