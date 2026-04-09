@@ -22,7 +22,8 @@ public class Main {
 
         // Step 8: Start the web server
         try {
-            int port = 8080;
+            String envPort = System.getenv("PORT");
+            int port = (envPort != null) ? Integer.parseInt(envPort) : 8080;
             StudyBuddyServer server = new StudyBuddyServer(port);
             server.start();
             System.out.println();

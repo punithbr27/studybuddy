@@ -61,6 +61,15 @@ public class StudyBuddyServer {
         server.setExecutor(null);
     }
 
+    // ─── CORS Preflight Handler ───
+    private void handleCors(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
+        exchange.sendResponseHeaders(204, -1);
+        exchange.close();
+    }
+
     public void start() {
         server.start();
         System.out.println("🌐 Server started at http://localhost:" + server.getAddress().getPort());
@@ -388,9 +397,9 @@ public class StudyBuddyServer {
         subjectController.addSubject("MA301", "Discrete Mathematics", 3);
 
         // Add sample tutors
-        User t1 = authController.register("TUTOR", "Aarav Sharma", "aarav@pes.edu", "pass123", 6, 9.2);
-        User t2 = authController.register("TUTOR", "Priya Patel", "priya@pes.edu", "pass123", 6, 8.8);
-        User t3 = authController.register("TUTOR", "Rahul Kumar", "rahul@pes.edu", "pass123", 5, 9.0);
+        User t1 = authController.register("TUTOR", "Aarav Sharma", "aarav@pesu.pes.edu", "pass123", 6, 9.2);
+        User t2 = authController.register("TUTOR", "Priya Patel", "priya@pesu.pes.edu", "pass123", 6, 8.8);
+        User t3 = authController.register("TUTOR", "Rahul Kumar", "rahul@pesu.pes.edu", "pass123", 5, 9.0);
 
         // Link tutors to subjects
         if (t1 != null) {
@@ -456,8 +465,15 @@ public class StudyBuddyServer {
     // ═══════════════════════════════════════════
 
     private void sendResponse(HttpExchange exchange, int status, String body) throws IOException {
+        // Handle CORS preflight
+        if ("OPTIONS".equals(exchange.getRequestMethod())) {
+            handleCors(exchange);
+            return;
+        }
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
         byte[] bytes = body.getBytes("UTF-8");
         exchange.sendResponseHeaders(status, bytes.length);
         exchange.getResponseBody().write(bytes);

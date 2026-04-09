@@ -13,11 +13,11 @@ import java.io.IOException;
  *
  * WHY SINGLETON?
  * ==============
- * Imagine 10 different parts of your app each opening their OWN database 
- * connection. That's wasteful and can cause conflicts (e.g., two parts 
- * trying to write to the same row). 
+ * Imagine 10 different parts of your app each opening their OWN database
+ * connection. That's wasteful and can cause conflicts (e.g., two parts
+ * trying to write to the same row).
  *
- * The Singleton pattern ensures there is ONLY ONE instance of this class 
+ * The Singleton pattern ensures there is ONLY ONE instance of this class
  * in the entire application. Everyone shares the same connection.
  *
  * HOW IT WORKS:
@@ -25,7 +25,7 @@ import java.io.IOException;
  * 1. The constructor is PRIVATE — so nobody can do "new DatabaseManager()"
  * 2. We have a static variable 'instance' that holds the ONE object
  * 3. The static method getInstance() either creates the object (first time)
- *    or returns the existing one (every other time)
+ * or returns the existing one (every other time)
  *
  * This is called "Lazy Initialization" — the object is created only when
  * someone first asks for it, not when the program starts.
@@ -39,33 +39,65 @@ public class DatabaseManager {
     // The actual database connection object
     private Connection connection;
 
-    // Path to our SQLite database file
-    private static final String DB_URL = "jdbc:sqlite:study_buddy.db";
+    // Database URL — reads from environment variable or falls back to SQLite
+    private static final String DB_URL;
+    private static final boolean isPostgres;
+    private static final String DB_USER;
+    private static final String DB_PASSWORD;
+
+    static {
+        String envHost = System.getenv("DB_HOST");
+        if (envHost != null && !envHost.isEmpty()) {
+            // Supabase/PostgreSQL mode
+            String port = System.getenv("DB_PORT") != null ? System.getenv("DB_PORT") : "5432";
+            String dbName = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "postgres";
+            DB_URL = "jdbc:postgresql://" + envHost + ":" + port + "/" + dbName;
+            DB_USER = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "postgres";
+            DB_PASSWORD = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "";
+            isPostgres = true;
+        } else {
+            // Local SQLite mode
+            DB_URL = "jdbc:sqlite:study_buddy.db";
+            DB_USER = null;
+            DB_PASSWORD = null;
+            isPostgres = false;
+        }
+    }
 
     // ─── Step 2: PRIVATE constructor — nobody outside can call this ───
-    // If this was public, anyone could do "new DatabaseManager()" and 
-    // create multiple instances, breaking the Singleton rule.
     private DatabaseManager() {
         try {
-            // Load the SQLite JDBC driver
-            Class.forName("org.sqlite.JDBC");
-            // Create the connection to the database file
-            this.connection = DriverManager.getConnection(DB_URL);
-            System.out.println("[DB] Connected to SQLite database successfully!");
+            if (isPostgres) {
+                Class.forName("org.postgresql.Driver");
+                java.util.Properties props = new java.util.Properties();
+                props.setProperty("user", DB_USER);
+                props.setProperty("password", DB_PASSWORD);
+                props.setProperty("sslmode", "require");
+                this.connection = DriverManager.getConnection(DB_URL, props);
+                System.out.println("[DB] Connected to PostgreSQL (Supabase) successfully!");
+            } else {
+                Class.forName("org.sqlite.JDBC");
+                this.connection = DriverManager.getConnection(DB_URL);
+                System.out.println("[DB] Connected to SQLite database successfully!");
+            }
         } catch (ClassNotFoundException e) {
-            System.err.println("[DB ERROR] SQLite JDBC driver not found!");
-            System.err.println("    Make sure sqlite-jdbc jar is in your classpath.");
+            System.err.println("[DB ERROR] JDBC driver not found!");
             e.printStackTrace();
         } catch (SQLException e) {
             System.err.println("[DB ERROR] Failed to connect to database!");
+            System.err.println("[DB ERROR] URL: " + DB_URL);
             e.printStackTrace();
         }
+    }
+
+    public static boolean isPostgresMode() {
+        return isPostgres;
     }
 
     // ─── Step 3: The public static method to get the SINGLE instance ───
     // This is the ONLY way to get a DatabaseManager object.
     //
-    // First call:  instance is null → creates new DatabaseManager → returns it
+    // First call: instance is null → creates new DatabaseManager → returns it
     // Second call: instance is NOT null → just returns the existing one
     //
     // This means the constructor runs ONLY ONCE in the entire application!
@@ -85,8 +117,13 @@ public class DatabaseManager {
     // ─── Initialize tables from schema.sql ───
     // Reads the SQL file and creates all tables
     public void initializeDatabase(String schemaFilePath) {
+        // Pick the correct schema file based on database mode
+        if (isPostgres) {
+            schemaFilePath = schemaFilePath.replace("schema.sql", "schema_postgres.sql");
+        }
+
         try {
-            // Read the entire schema.sql file
+            // Read the entire schema file
             StringBuilder sql = new StringBuilder();
             BufferedReader reader = new BufferedReader(new FileReader(schemaFilePath));
             String line;
