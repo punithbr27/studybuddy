@@ -3,11 +3,16 @@
    ═══════════════════════════════════════════ */
 
 // ─── SUPABASE CONFIG ───
-// IMPORTANT: Replace these with your actual Supabase values
 const SUPABASE_URL = 'https://gmzpodtztfehemotfxwf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtenBvZHR6dGZlaGVtb3RmeHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTk0ODgsImV4cCI6MjA5MTI3NTQ4OH0.oHbZzfIXrJ2V5mu2gSwNdXyJxzA4YTlwnB5NPWhSEMM';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase;
+try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase connected!');
+} catch (e) {
+    console.error('❌ Supabase init failed:', e);
+}
 
 // ─── STATE ───
 let currentUser = null;
