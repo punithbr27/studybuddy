@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Buddy — Peer-to-Peer Academic Assistance</title>
+    <meta name="description" content="Connect with peer tutors for specific topics and modules at your university.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- ═══════════════ NAVBAR ═══════════════ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">📚</span>
+            <span class="nav-title">Study Buddy</span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="#" onclick="showPage('home')" class="nav-link active">Home</a>
+        </div>
+        <div class="nav-user" id="navUser" style="display:none;">
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔 <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+            </div>
+            <span class="user-name" id="userName"></span>
+            <span class="user-role-badge" id="userRoleBadge"></span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- ═══════════════ NOTIFICATION PANEL ═══════════════ -->
+    <div class="notification-panel" id="notifPanel" style="display:none;">
+        <h3>🔔 Notifications</h3>
+        <div id="notifList"></div>
+    </div>
+
+    <!-- ═══════════════ PAGES ═══════════════ -->
+
+    <!-- HOME / LANDING -->
+    <div class="page active" id="page-home">
+        <div class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Find Your Perfect <span class="gradient-text">Study Buddy</span></h1>
+                <p class="hero-subtitle">Connect with peer tutors who've mastered the topics you're struggling with.
+                    Specific modules, not just subjects.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary btn-lg" onclick="showPage('register')">Get Started</button>
+                    <button class="btn btn-outline btn-lg" onclick="showPage('login')">Sign In</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat"><span class="stat-number">5</span><span class="stat-label">Design Patterns</span>
+                    </div>
+                    <div class="stat"><span class="stat-number">8+</span><span class="stat-label">Subjects</span></div>
+                    <div class="stat"><span class="stat-number">MVC</span><span class="stat-label">Architecture</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="pattern-card card-float-1">🏗️ Singleton</div>
+                <div class="pattern-card card-float-2">🏭 Factory</div>
+                <div class="pattern-card card-float-3">🔄 Strategy</div>
+                <div class="pattern-card card-float-4">📦 Command</div>
+                <div class="pattern-card card-float-5">👁️ Observer</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="page" id="page-register">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Create Account</h2>
+                <p class="auth-subtitle">Join the Study Buddy community</p>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="regName" placeholder="e.g., Punith BR" required>
+                    </div>
+                    <div class="form-group">
+                        <label>University Email</label>
+                        <input type="email" id="regEmail" placeholder="e.g., student@pesu.pes.edu" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Role</label>
+                            <select id="regRole">
+                                <option value="STUDENT">Student (Learner)</option>
+                                <option value="TUTOR">Tutor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Semester</label>
+                            <select id="regSemester">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6" selected>6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>CGPA</label>
+                        <input type="number" id="regCgpa" step="0.1" min="0" max="10" placeholder="e.g., 8.5" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Register</button>
+                    <p class="auth-link">Already have an account? <a href="#" onclick="showPage('login')">Sign In</a>
+                    </p>
+                </form>
+                <div id="registerMsg" class="msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="page" id="page-login">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to your Study Buddy account</p>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="your@email.edu" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+                    <p class="auth-link">Don't have an account? <a href="#" onclick="showPage('register')">Register</a>
+                    </p>
+                </form>
+                <div id="loginMsg" class="msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page" id="page-dashboard">
+        <div class="dashboard">
+            <div class="dash-header">
+                <h2>Dashboard</h2>
+                <p id="dashWelcome">Welcome back!</p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-card" onclick="showPage('search')">
+                    <span class="action-icon">🔍</span>
+                    <h3>Find Tutors</h3>
+                    <p>Search by subject, rating, or availability</p>
+                </div>
+                <div class="action-card" onclick="showPage('sessions')">
+                    <span class="action-icon">📅</span>
+                    <h3>My Sessions</h3>
+                    <p>View bookings and manage sessions</p>
+                </div>
+                <div class="action-card tutor-only" onclick="showPage('tutor-manage')" style="display:none;">
+                    <span class="action-icon">📖</span>
+                    <h3>My Subjects</h3>
+                    <p>Manage subjects you teach</p>
+                </div>
+            </div>
+
+            <!-- Recent Sessions -->
+            <div class="section">
+                <h3>Recent Sessions</h3>
+                <div id="recentSessions" class="session-list">
+                    <p class="empty-state">No sessions yet. Start by finding a tutor! 🔍</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="page" id="page-search">
+        <div class="search-page">
+            <div class="search-header">
+                <h2>Find Tutors</h2>
+                <div class="search-bar">
+                    <input type="text" id="searchInput"
+                        placeholder="Search by subject name or code (e.g., OOAD, CS601)..."
+                        onkeyup="if(event.key==='Enter')performSearch()">
+                    <button class="btn btn-primary" onclick="performSearch()">Search</button>
+                </div>
+                <div class="strategy-selector">
+                    <label>Sort by:</label>
+                    <button class="strat-btn active" data-strategy="subject" onclick="setStrategy(this)">📚
+                        Subject</button>
+                    <button class="strat-btn" data-strategy="rating" onclick="setStrategy(this)">⭐ Rating</button>
+                    <button class="strat-btn" data-strategy="availability" onclick="setStrategy(this)">🟢 Available
+                        Now</button>
+                </div>
+            </div>
+            <div id="searchResults" class="tutor-grid">
+                <p class="empty-state">Enter a subject to find tutors 🎯</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SESSIONS -->
+    <div class="page" id="page-sessions">
+        <div class="sessions-page">
+            <h2>My Sessions</h2>
+            <div class="session-filters">
+                <button class="filter-btn active" onclick="filterSessions(this, 'all')">All</button>
+                <button class="filter-btn" onclick="filterSessions(this, 'PENDING')">⏳ Pending</button>
+                <button class="filter-btn" onclick="filterSessions(this, 'CONFIRMED')">✅ Confirmed</button>
+                <button class="filter-btn" onclick="filterSessions(this, 'COMPLETED')">🎉 Completed</button>
+                <button class="filter-btn" onclick="filterSessions(this, 'CANCELLED')">❌ Cancelled</button>
+            </div>
+            <div id="sessionsList" class="session-list">
+                <p class="empty-state">No sessions found.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── MANAGE SUBJECTS (TUTOR ONLY) ─── -->
+    <div id="page-tutor-manage" class="page">
+        <div class="manage-page">
+            <h2>Manage Subjects 📚</h2>
+            <div class="section">
+                <h3>Current Subjects</h3>
+                <div id="mySubjects" class="subject-chips"></div>
+            </div>
+            <div class="section">
+                <h3>Add Subjects to Teach</h3>
+                <div id="availableSubjects" class="subject-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── UNVERIFIED NOTICE ─── -->
+    <div id="page-unverified" class="page">
+        <div class="auth-container">
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 64px; margin-bottom: 24px;">⏳</div>
+                <h2>Account Under Review</h2>
+                <p class="auth-subtitle">Your account has been created successfully. However, it needs to be verified by
+                    the System Admin before you can access all features.</p>
+                <div class="notif-item" style="border-left-color: var(--warning); text-align: left; margin: 24px 0;">
+                    <strong>Note:</strong> We only allow <strong>@pesu.pes.edu</strong> emails for security and quality
+                    control.
+                </div>
+                <button class="btn btn-outline btn-full" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── ADMIN DASHBOARD ─── -->
+    <div id="page-admin" class="page">
+        <div class="dashboard">
+            <div class="dash-header">
+                <h2>Admin Dashboard 🛡️</h2>
+                <p>Verify new student and tutor accounts</p>
+            </div>
+
+            <div class="section">
+                <h3>Pending Verifications</h3>
+                <div id="adminPendingList" class="session-list">
+                    <!-- Loaded via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKING MODAL -->
+    <div class="modal-overlay" id="bookingModal" style="display:none;" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <h3>📅 Book a Session</h3>
+            <div id="bookingTutorInfo"></div>
+            <form onsubmit="submitBooking(event)">
+                <div class="form-group">
+                    <label>Subject</label>
+                    <select id="bookSubject"></select>
+                </div>
+                <div class="form-group">
+                    <label>Date & Start Time</label>
+                    <input type="datetime-local" id="bookStart" required>
+                </div>
+                <div class="form-group">
+                    <label>End Time</label>
+                    <input type="datetime-local" id="bookEnd" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Book Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FEEDBACK MODAL -->
+    <div class="modal-overlay" id="feedbackModal" style="display:none;" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <h3>⭐ Rate This Session</h3>
+            <div class="star-rating" id="starRating">
+                <span class="star" data-rating="1" onclick="setRating(1)">★</span>
+                <span class="star" data-rating="2" onclick="setRating(2)">★</span>
+                <span class="star" data-rating="3" onclick="setRating(3)">★</span>
+                <span class="star" data-rating="4" onclick="setRating(4)">★</span>
+                <span class="star" data-rating="5" onclick="setRating(5)">★</span>
+            </div>
+            <div class="form-group">
+                <label>Comment (optional)</label>
+                <textarea id="feedbackComment" placeholder="How was the session?"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitFeedback()">Submit Rating</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Supabase JS Client (UMD bundle for browser) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
