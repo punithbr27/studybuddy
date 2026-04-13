@@ -49,6 +49,11 @@ function showPage(pageName) {
     document.getElementById('page-' + pageName).classList.add('active');
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
 
+    // Save current page for restoration on reload
+    if (pageName !== 'login' && pageName !== 'register' && pageName !== 'unverified') {
+        localStorage.setItem('studybuddy_page', pageName);
+    }
+
     if (pageName === 'dashboard') loadDashboard();
     if (pageName === 'sessions') loadSessions();
     if (pageName === 'tutor-manage') loadTutorSubjects();
@@ -99,7 +104,7 @@ async function handleLogin(e) {
     }
 }
 
-function loginAs(user) {
+function loginAs(user, targetPage = null) {
     currentUser = user;
     localStorage.setItem('studybuddy_user', JSON.stringify(user));
     document.getElementById('userName').textContent = user.name;
@@ -119,14 +124,14 @@ function loginAs(user) {
             <a href="#" onclick="showPage('admin')" class="nav-link active">Admin Panel</a>
             <a href="#" onclick="showPage('dashboard')" class="nav-link">Dashboard</a>
         `;
-        showPage('admin');
+        showPage(targetPage || 'admin');
     } else {
         navLinks.innerHTML = `
             <a href="#" onclick="showPage('dashboard')" class="nav-link active">Dashboard</a>
             <a href="#" onclick="showPage('search')" class="nav-link">Find Tutors</a>
             <a href="#" onclick="showPage('sessions')" class="nav-link">Sessions</a>
         `;
-        showPage('dashboard');
+        showPage(targetPage || 'dashboard');
     }
 
     if (user.role === 'TUTOR') {
@@ -142,6 +147,7 @@ function loginAs(user) {
 function logout() {
     currentUser = null;
     localStorage.removeItem('studybuddy_user');
+    localStorage.removeItem('studybuddy_page');
     document.getElementById('navUser').style.display = 'none';
     document.getElementById('navLinks').innerHTML = '<a href="#" onclick="showPage(\'home\')" class="nav-link active">Home</a>';
     document.querySelectorAll('.tutor-only').forEach(el => el.style.display = 'none');
@@ -604,13 +610,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check for persisted session
     const savedUser = localStorage.getItem('studybuddy_user');
+    const savedPage = localStorage.getItem('studybuddy_page');
+
     if (savedUser) {
         try {
             const user = JSON.parse(savedUser);
-            loginAs(user);
+            loginAs(user, savedPage);
         } catch (e) {
             console.error('Failed to restore session:', e);
             localStorage.removeItem('studybuddy_user');
+            localStorage.removeItem('studybuddy_page');
+            showPage('home');
         }
     } else {
         showPage('home');
