@@ -340,7 +340,8 @@ public class StudyBuddyServer {
                     .append("\",\"tutorName\":\"").append(s.getTutorName() != null ? s.getTutorName() : "")
                     .append("\",\"studentName\":\"").append(s.getStudentName() != null ? s.getStudentName() : "")
                     .append("\",\"subjectName\":\"").append(s.getSubjectName() != null ? s.getSubjectName() : "")
-                    .append("\"}");
+                    .append("\",\"hasFeedback\":").append(s.hasFeedback())
+                    .append("}");
         }
         json.append("]");
         sendResponse(exchange, 200, json.toString());

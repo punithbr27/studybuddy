@@ -106,11 +106,13 @@ public class BookingController {
 
     // Get session by ID
     public Session getSessionById(int sessionId) {
-        String sql = "SELECT s.*, u1.name as tutor_name, u2.name as student_name, sub.name as subject_name " +
+        String sql = "SELECT s.*, u1.name as tutor_name, u2.name as student_name, sub.name as subject_name, " +
+                "CASE WHEN f.feedback_id IS NOT NULL THEN 1 ELSE 0 END as has_feedback " +
                 "FROM sessions s " +
                 "JOIN users u1 ON s.tutor_id = u1.user_id " +
                 "JOIN users u2 ON s.student_id = u2.user_id " +
                 "JOIN subjects sub ON s.subject_id = sub.subject_id " +
+                "LEFT JOIN feedback f ON s.session_id = f.session_id " +
                 "WHERE s.session_id = ?";
         try {
             PreparedStatement pstmt = dbManager.getConnection().prepareStatement(sql);
@@ -133,11 +135,13 @@ public class BookingController {
     // Get all sessions for a user (as student or tutor)
     public List<Session> getSessionsForUser(int userId) {
         List<Session> sessions = new ArrayList<>();
-        String sql = "SELECT s.*, u1.name as tutor_name, u2.name as student_name, sub.name as subject_name " +
+        String sql = "SELECT s.*, u1.name as tutor_name, u2.name as student_name, sub.name as subject_name, " +
+                "CASE WHEN f.feedback_id IS NOT NULL THEN 1 ELSE 0 END as has_feedback " +
                 "FROM sessions s " +
                 "JOIN users u1 ON s.tutor_id = u1.user_id " +
                 "JOIN users u2 ON s.student_id = u2.user_id " +
                 "JOIN subjects sub ON s.subject_id = sub.subject_id " +
+                "LEFT JOIN feedback f ON s.session_id = f.session_id " +
                 "WHERE s.student_id = ? OR s.tutor_id = ? " +
                 "ORDER BY s.created_at DESC";
         try {
@@ -169,6 +173,7 @@ public class BookingController {
             session.setTutorName(rs.getString("tutor_name"));
             session.setStudentName(rs.getString("student_name"));
             session.setSubjectName(rs.getString("subject_name"));
+            session.setHasFeedback(rs.getInt("has_feedback") == 1);
         } catch (SQLException e) {
             // columns might not exist in all queries
         }

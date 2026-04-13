@@ -20,12 +20,16 @@ public class SearchByRating implements SearchStrategy {
         // SQL: Find tutors who teach a subject matching the keyword,
         // ordered by their average feedback rating (highest first)
         String sql = "SELECT u.*, " +
-                "COALESCE(AVG(f.rating), 0) as avg_rating, " +
-                "COUNT(f.rating) as total_ratings " +
+                "COALESCE(r.avg_rating, 0) as avg_rating, " +
+                "COALESCE(r.total_ratings, 0) as total_ratings " +
                 "FROM users u " +
                 "JOIN tutor_subjects ts ON u.user_id = ts.tutor_id " +
                 "JOIN subjects s ON ts.subject_id = s.subject_id " +
-                "LEFT JOIN feedback f ON u.user_id = f.tutor_id " +
+                "LEFT JOIN (" +
+                "  SELECT tutor_id, AVG(rating) as avg_rating, COUNT(*) as total_ratings " +
+                "  FROM feedback " +
+                "  GROUP BY tutor_id" +
+                ") r ON u.user_id = r.tutor_id " +
                 "WHERE u.role = 'TUTOR' " +
                 "AND (s.name LIKE ? OR s.subject_code LIKE ?) " +
                 "GROUP BY u.user_id " +

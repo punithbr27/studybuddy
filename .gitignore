@@ -1,0 +1,29 @@
+# Java
+*.class
+*.jar
+!study_buddy/lib/*.jar
+
+# Database
+*.db
+study_buddy/study_buddy.db
+
+# IDE and Project files
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment files
+.env
+
+# Build directories
+target/
+bin/
+out/

@@ -17,6 +17,7 @@ public class Session {
     private String tutorName;
     private String studentName;
     private String subjectName;
+    private boolean hasFeedback;
 
     public Session(int sessionId, int tutorId, int studentId, int subjectId,
             String startTime, String endTime, String status) {
@@ -94,6 +95,14 @@ public class Session {
 
     public void setSubjectName(String name) {
         this.subjectName = name;
+    }
+
+    public boolean hasFeedback() {
+        return hasFeedback;
+    }
+
+    public void setHasFeedback(boolean hasFeedback) {
+        this.hasFeedback = hasFeedback;
     }
 
     @Override
